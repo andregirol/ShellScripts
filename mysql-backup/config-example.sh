@@ -5,17 +5,15 @@ dbuser="userdb"
 dbpass="mypass"
 
 # Dados do servidor de arquivos
-
-# usuário
-serveruser="my_ssh_user"
+# Usuário
+sshuser="my_ssh_user"
 
 # hostname do servidor de arquivos
-serverhost="my.host.com"
+fileserver="my.host.com"
 
 # pasta de destino
 # manter a barra ao lado direito!!
 serverfolder="backup/destination/"
 
 # URL completa:
-destination="$serveruser@$serverhost:$serverfolder"
-
+destination="$sshuser@$fileserver:$serverfolder"
