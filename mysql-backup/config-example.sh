@@ -8,10 +8,12 @@ dbpass="mypass"
 # Mail Server configuration
 # ==========================
 
+date_subject=$(date +"%Y/%m/%d")
+
 # User Configuration
 from='the_sender@domain.com'
 to='the_destination@domain.com'
-subject="My Subject Here"
+subject="SQL Backup for $database at $date_subject"
 message="Write what you want"
 
 # Settings for Gmail.
@@ -26,6 +28,8 @@ pass='my_password'
 
 # ==========================
 # File Server Configuration
+
+# Not yet implemented
 # ==========================
 
 sshuser="my_ssh_user"
