@@ -1,33 +1,48 @@
 #!/bin/bash
 
-# Script para realização de backup da base de dados MySQL
-# Data de criação: 27/07/2015
+# Script to dump MySQL database and send its results by email
+# Creation date: 27/07/2015
 # Dev: André Girol - andregirol at gmail dot com
 
-# Inclui Configuração inicial
+# Last update: 07/08/2017
+
+# Includes database and mail configuration
 source config.sh
 
-# Formata data para o arquivo SQL
-# Output ->Database + Data
-file_date="_`date +%Y_%m_%d__%H-%M-%S`"
+# Gets date for the dump. Format the
+# Output -> Database + Date
+file_date=$(date +"_%Y_%m_%d")
 
-# Concatenando
+# joining database name + date
 dump_file=$database$file_date
 
-#echo $dump_file
+echo "Starting dump for $database in host: $dbhost..."
+mysqldump -c -h $dbhost --user $dbuser --password=$dbpass $database > "$dump_file.sql"
 
-echo "Iniciando dump para $database em $dbhost..."
-mysqldump -c -h $dbhost --user $dbuser --password=$dbpass $database > $dump_file.sql
+# Compressing...
 
-# Acertando variáveis
-the_backup="$dump_file.sql"
+# -c: Create an archive.
+# -z: Compress the archive with gzip.
+# -v: Display progress in the terminal while creating the archive, also known as “verbose” mode.
+# The v is always optional in these commands, but it’s helpful.
+# -f: Allows you to specify the filename of the archive.
+
+compressed_bkp="$dump_file.tar.gz"
+
+tar -czvf $compressed_bkp "$dump_file.sql"
 
 echo "Sending Backup to Email..."
-sendEmail -f "$from" -t $to -u "$subject" -m "$message" -a $the_backup -s $smtp -o tls=yes -xu $username -xp $pass
+sendEmail -f "$from" -t $to -u "$subject" -m "$message" -a "$compressed_bkp" -s $smtp -o tls=yes -xu $username -xp $pass
+
+echo "Cleanin up .sql files..."
+rm -rf *.sql
+
 
 # ============
-
 # Here notes for using a file server and backup over ssh
+#
+# NOT YET IMPLEMENTED
+
 
 #destfile="$destination$arquivo.sql"
 
