@@ -1,2 +1,3 @@
 *.sql
+*.tar.gz
 config.sh
