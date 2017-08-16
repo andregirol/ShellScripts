@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# Descrição:
+# Script criado com o intuito de copiar um diretório de simulações para
+# a pasta do usuário
+#
+# Instala arquivo de benchmark especificado no diretório de um usuário
+#
+# Uso:
+#    ./install_benchmark [nome_usuario] - Sem os colchetes
+#
+#
+# ---- Configurações ----
+# 
+# Não coloque uma / no final dos diretórios
+
+
+# Local onde os benchmarks estão localizados (pasta de instalação do programa)
+bench_root=/srv/Gate_github/benchmarks
+
+# Qual benchmark você deseja copiar:
+bench_dir=/benchSPECT
+
+# ===== NÃO ALTERE DAQUI PARA BAIXO =====
+
+
+# CoReS para ficar mais divertido:
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # remove a cor
+
+# Somente o Root pode realizar a cópia
+if [[ $EUID -ne 0 ]]; then
+   echo -e "${RED} [ ERRO ] ${NC} Permissão negada. Você é root?" 1>&2
+   exit 1
+fi
+
+# Verifica se foi digitado um nome de usuário
+# Se não foi, sai do script e mostra como usá-lo
+if [ ! $1 ] ; then
+   printf "${RED}[ ERRO ]${NC} Informe um usuário para realizar a cópia \n\n"
+   printf "\nUso do script: \n"
+   printf "$0 nome_usuario \n"
+   echo
+   exit 1
+fi
+
+
+# Verifica se a pasta do usuário alvo existe:
+
+if [ ! -d "/home/$1/" ]; then
+   printf "${RED}[ ERRO ]${NC} Pasta do usuário inexistente... Ele já foi criado? \n"
+   exit 1
+fi
+
+# Inicia a cópia...
+
+echo -e "Iniciando a cópia para o usuário $1"
+cp -rv $bench_root$bench_dir  /home/$1/
+
+echo -e "${GREEN} [ OK ] ${NC} Pasta copiada"
+
+echo -e "Aplicando permissões de usuário"
+echo
+
+chown -Rv $1:$1 /home/$1$bench_dir
+
+echo
+echo -e "${GREEN} [ OK ] ${NC} Permissões aplicadas."
+
+echo -e "${GREEN} [ DONE ] ${NC} Benchmark instalado com sucesso"
